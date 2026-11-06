@@ -7,7 +7,10 @@ authors = [
     { name = "Naq", email = "194685328+NaqGuug@users.noreply.github.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pydantic>=2.14.3",
+    "pytest>=9.2.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
