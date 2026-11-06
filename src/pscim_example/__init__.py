@@ -1,2 +1,6 @@
-def hello() -> str:
-    return "Hello from pscim-example!"
+from .resources import Resource, Meta
+
+__all__ = [
+    "Resource",
+    "Meta",
+]
