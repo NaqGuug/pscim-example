@@ -1,0 +1,14 @@
+[project]
+name = "pscim-example"
+version = "0.1.0"
+description = "Example Python library for handling SCIM data"
+readme = "README.md"
+authors = [
+    { name = "Naq", email = "194685328+NaqGuug@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
