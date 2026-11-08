@@ -23,6 +23,10 @@ class Meta(ComplexAttribute):
 class Resource(SCIMBaseModel):
     """Base model for resources"""
 
+    # TODO: Remove
+    schemas: list[URI] | None = None
+    """List of schemas"""
+
     id: str | None = None
     """A unique identifier for a SCIM resource as defined by the service provider."""
 

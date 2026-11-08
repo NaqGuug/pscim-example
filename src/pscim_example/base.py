@@ -1,5 +1,6 @@
+from typing import Any
 from pydantic.alias_generators import to_camel
-from pydantic import BaseModel, ConfigDict, AliasGenerator
+from pydantic import BaseModel, ConfigDict, AliasGenerator, model_validator
 
 
 class SCIMBaseModel(BaseModel):
@@ -15,3 +16,10 @@ class SCIMBaseModel(BaseModel):
         ),
         use_attribute_docstrings=True,
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalise_incoming_fields(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            return {key.lower(): value for key, value in data.items()}
+        return data
