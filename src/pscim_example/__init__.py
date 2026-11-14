@@ -1,11 +1,11 @@
 from .resources import (
-    Resource,
     Meta,
+    Resource,
     User,
 )
 
 __all__ = [
-    "Resource",
     "Meta",
+    "Resource",
     "User",
 ]

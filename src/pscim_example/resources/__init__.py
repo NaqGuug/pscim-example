@@ -1,8 +1,8 @@
-from .resource import Resource, Meta
+from .resource import Meta, Resource
 from .user import User
 
 __all__ = [
-    "Resource",
     "Meta",
+    "Resource",
     "User",
 ]

@@ -1,6 +1,5 @@
-from datetime import datetime
-from .resource import Resource
 from ..types import URI, ComplexAttribute, MultiValuedComplexAttribute
+from .resource import Resource
 
 
 class Name(ComplexAttribute):

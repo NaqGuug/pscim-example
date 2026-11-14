@@ -1,6 +1,7 @@
 from datetime import datetime
+
 from ..base import SCIMBaseModel
-from ..types import ComplexAttribute, URI
+from ..types import URI, ComplexAttribute
 
 
 class Meta(ComplexAttribute):

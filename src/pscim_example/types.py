@@ -1,10 +1,13 @@
 import re
 from typing import Annotated
+
 from pydantic import Field
+
 from .base import SCIMBaseModel
 
 # https://jmrware.com/articles/2009/uri_regexp/URI_regex.html
-re_python_rfc3986_URI_reference = re.compile(r""" ^
+re_python_rfc3986_URI_reference = re.compile(
+    r""" ^
     # RFC-3986 URI component: URI-reference
     (?:                                                               # (
       [A-Za-z][A-Za-z0-9+\-.]* :                                      # URI
@@ -89,7 +92,9 @@ re_python_rfc3986_URI_reference = re.compile(r""" ^
       (?:\? (?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})* )?
       (?:\# (?:[A-Za-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9A-Fa-f]{2})* )?
     )                                                                       # )
-    $ """, re.VERBOSE)
+    $ """,
+    re.VERBOSE,
+)
 
 type URI = Annotated[str, Field(pattern=re_python_rfc3986_URI_reference)]
 

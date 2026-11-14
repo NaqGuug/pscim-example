@@ -1,6 +1,6 @@
 from pathlib import Path
-from pscim_example import User
 
+from pscim_example import User
 
 fixture_path = Path(__file__).parent / "fixtures"
 full_user = (fixture_path / "full_user.json").read_text()
