@@ -1,7 +1,13 @@
 from typing import Any
 
 from pydantic import AliasGenerator, BaseModel, ConfigDict, model_validator
-from pydantic.alias_generators import to_camel
+
+
+def snake_to_camel(string: str) -> str:
+    if not string:
+        return string
+    words = string.split("_")
+    return words[0].lower() + "".join(word.capitalize() for word in words[1:])
 
 
 class SCIMBaseModel(BaseModel):
@@ -11,9 +17,7 @@ class SCIMBaseModel(BaseModel):
         extra="forbid",
         alias_generator=AliasGenerator(
             validation_alias=lambda s: s.replace("_", "").lower(),
-            # TODO: This capitalises characters after special ones (e.g. $ref -> $Ref)
-            # However, on those cases the serialisation alias should be overriden
-            serialization_alias=to_camel,
+            serialization_alias=snake_to_camel,
         ),
         use_attribute_docstrings=True,
     )
@@ -24,3 +28,14 @@ class SCIMBaseModel(BaseModel):
         if isinstance(data, dict):
             return {key.lower(): value for key, value in data.items()}
         return data
+
+    # TODO: Implement the following functions
+    # The key must be the validation alias (case-insensitive)
+    def __getitem__(self, key: str) -> Any:
+        return key.lower()
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.__getitem__(key)
+
+    def __delitem__(self, key: str) -> None:
+        self.__delattr__(key)
