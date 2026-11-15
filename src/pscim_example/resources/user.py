@@ -1,4 +1,6 @@
-from ..types import URI, ComplexAttribute, MultiValuedComplexAttribute
+from pydantic import Base64Bytes, Field
+
+from ..types import URI, ComplexAttribute
 from .resource import Resource
 
 
@@ -22,25 +24,63 @@ class Name(ComplexAttribute):
     """The honorific suffix(es) of the User, or suffix in most Western languages"""
 
 
-class Email(MultiValuedComplexAttribute):
-    """Email"""
+class Email(ComplexAttribute):
+    value: str | None = None
+    """Email addresses for the user."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function, e.g., 'work' or 'home'."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class PhoneNumber(MultiValuedComplexAttribute):
-    """Phone number"""
+class PhoneNumber(ComplexAttribute):
+    value: str | None = None
+    """Phone number of the User."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function, e.g., 'work', 'home', 'mobile'."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class Ims(MultiValuedComplexAttribute):
-    """Instant messaging address"""
+class Ims(ComplexAttribute):
+    value: str | None = None
+    """Instant messaging address for the User."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function, e.g., 'aim', 'gtalk', 'xmpp'."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class Photo(MultiValuedComplexAttribute):
-    """Photo"""
+class Photo(ComplexAttribute):
+    value: URI | None = None
+    """URL of a photo of the User."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function, i.e., 'photo' or 'thumbnail'."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class Address(MultiValuedComplexAttribute):
-    """Address"""
-
+class Address(ComplexAttribute):
     formatted: str | None = None
     """The full mailing address, formatted for display or use with a mailing label."""
 
@@ -60,23 +100,67 @@ class Address(MultiValuedComplexAttribute):
     """The country name component."""
 
     type: str | None = None
-    """Type"""
+    """A label indicating the attribute's function, e.g., 'work' or 'home'."""
+
+    # https://errata.rfc-editor.org/eid6005/
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class Group(MultiValuedComplexAttribute):
-    """Group"""
+class Group(ComplexAttribute):
+    value: str | None = None
+    """The identifier of the User's group."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function, e.g., 'direct' or 'indirect'."""
+
+    ref: URI | None = Field(None, alias="$ref")
+    """The URI of the corresponding 'Group' resource to which the user belongs."""
 
 
-class Entitlement(MultiValuedComplexAttribute):
-    """Entitlement"""
+class Entitlement(ComplexAttribute):
+    value: str | None = None
+    """The value of an entitlement."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class Role(MultiValuedComplexAttribute):
-    """Role"""
+class Role(ComplexAttribute):
+    value: str | None = None
+    """The value of a role."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
-class X509Certificate(MultiValuedComplexAttribute):
-    """X.509 Certificate"""
+class X509Certificate(ComplexAttribute):
+    value: Base64Bytes | None = None
+    """The value of an X.509 certificate."""
+
+    display: str | None = None
+    """A human-readable name, primarily used for display purposes."""
+
+    type: str | None = None
+    """A label indicating the attribute's function."""
+
+    primary: bool | None = None
+    """A Boolean value indicating the 'primary' or preferred attribute value for this attribute."""
 
 
 class User(Resource):
