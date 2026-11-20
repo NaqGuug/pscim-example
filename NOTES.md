@@ -1,8 +1,16 @@
 # Notes while developing library
-- Raw Pydantic validation (full user json) takes around 50 microseconds (median)
+- Raw Pydantic validation (full user json) takes around 25 microseconds (median)
     - No custom validation, just Pydantic
-- URI regex validation is slow
+    - 50 us if fields are normalised (mandatory)
+- URI regex validation is slow?
     - Full URI regex adds around 25 microseconds of overhead when validating full user
     - That's 50 % increase
+    - However, adding more mandatory Python stuff will increase it too
+- Email validation
+    - Using `EmailStr` adds 75 microseconds
+    - https://regex101.com/r/3uvtNl/1
+    - https://www.geeksforgeeks.org/javascript/how-to-validate-email-address-using-regexp-in-javascript/
+        - Invalid, extra backslash
+    - https://stackoverflow.com/questions/20771794/mailrfc822address-regex
 - RFC 7643 does not define primary field for User addresses.
     - See errata [6005](https://errata.rfc-editor.org/eid6005/)
