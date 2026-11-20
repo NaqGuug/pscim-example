@@ -1,5 +1,13 @@
+from typing import Annotated
+
 from pydantic import Base64Bytes, Field
 
+from ..characteristics import (
+    Mutability,
+    Required,
+    Returned,
+    Uniqueness,
+)
 from ..types import URI, ComplexAttribute
 from .resource import Resource
 
@@ -108,16 +116,28 @@ class Address(ComplexAttribute):
 
 
 class Group(ComplexAttribute):
-    value: str | None = None
+    value: Annotated[
+        str | None,
+        Mutability.READ_ONLY
+    ] = None
     """The identifier of the User's group."""
 
-    display: str | None = None
+    display: Annotated[
+        str | None,
+        Mutability.READ_ONLY
+    ] = None
     """A human-readable name, primarily used for display purposes."""
 
-    type: str | None = None
+    type: Annotated[
+        str | None,
+        Mutability.READ_ONLY
+    ] = None
     """A label indicating the attribute's function, e.g., 'direct' or 'indirect'."""
 
-    ref: URI | None = Field(None, alias="$ref")
+    ref: Annotated[
+        URI | None,
+        Mutability.READ_ONLY
+    ] = Field(None, alias="$ref")
     """The URI of the corresponding 'Group' resource to which the user belongs."""
 
 
@@ -166,7 +186,11 @@ class X509Certificate(ComplexAttribute):
 class User(Resource):
     """User resource"""
 
-    user_name: str | None = None
+    user_name: Annotated[
+        str | None,
+        Required.TRUE,
+        Uniqueness.SERVER
+    ] = None
     """A service provider's unique identifier for the user"""
 
     name: Name | None = None
@@ -199,7 +223,11 @@ class User(Resource):
     active: bool | None = None
     """A Boolean value indicating the user's administrative status."""
 
-    password: str | None = None
+    password: Annotated[
+        str | None,
+        Mutability.WRITE_ONLY,
+        Returned.NEVER
+    ] = None
     """This attribute is intended to be used as a means to set, replace, or compare a password."""
 
     emails: list[Email] | None = None
@@ -217,7 +245,10 @@ class User(Resource):
     addresses: list[Address] | None = None
     """A physical mailing address for this user."""
 
-    groups: list[Group] | None = None
+    groups: Annotated[
+        list[Group] | None,
+        Mutability.READ_ONLY
+    ] = None
     """A list of groups to which the user belongs."""
 
     entitlements: list[Entitlement] | None = None

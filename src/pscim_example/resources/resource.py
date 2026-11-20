@@ -1,23 +1,38 @@
 from datetime import datetime
+from typing import Annotated
 
 from ..base import SCIMBaseModel
+from ..characteristics import (
+    CaseExact,
+    Mutability,
+    Returned,
+    Uniqueness,
+)
 from ..types import URI, ComplexAttribute
 
 
 class Meta(ComplexAttribute):
-    resource_type: str | None = None
+    resource_type: Annotated[
+        str | None,
+        CaseExact.TRUE,
+        Mutability.READ_ONLY
+    ] = None
     """The name of the resource type of the resource."""
 
-    created: datetime | None = None
+    created: Annotated[datetime | None, Mutability.READ_ONLY] = None
     """The "DateTime" that the resource was added to the service provider."""
 
-    last_modified: datetime | None = None
+    last_modified: Annotated[datetime | None, Mutability.READ_ONLY] = None
     """The most recent DateTime that the details of this resource were updated at the service provider."""
 
-    location: URI | None = None
+    location: Annotated[URI | None, Mutability.READ_ONLY] = None
     """The URI of the resource being returned."""
 
-    version: str | None = None
+    version: Annotated[
+        str | None,
+        CaseExact.TRUE,
+        Mutability.READ_ONLY
+    ] = None
     """The version of the resource being returned."""
 
 
@@ -28,11 +43,17 @@ class Resource(SCIMBaseModel):
     schemas: list[URI] | None = None
     """List of schemas"""
 
-    id: str | None = None
+    id: Annotated[
+        str | None,
+        CaseExact.TRUE,
+        Mutability.READ_ONLY,
+        Returned.ALWAYS,
+        Uniqueness.GLOBAL  # Or server
+    ] = None
     """A unique identifier for a SCIM resource as defined by the service provider."""
 
-    external_id: str | None = None
+    external_id: Annotated[str | None, CaseExact.TRUE] = None
     """A String that is an identifier for the resource as defined by the provisioning client."""
 
-    meta: Meta | None = None
+    meta: Annotated[Meta | None, Mutability.READ_ONLY] = None
     """A complex attribute containing resource metadata."""

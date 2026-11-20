@@ -7,10 +7,8 @@
 ## Dump by alias + exclude none etc.
 - Override validation and dump methods
 
-## Characteristics
-- Python types
-
 ## Context (GET, POST differences on characteristics)
+- Validate by characteristics
 - Creating resource
 - Retrieving resource
 - Updating?
