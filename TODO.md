@@ -13,6 +13,14 @@
 - Retrieving resource
 - Updating?
 
+Request
+- Validation: ignore read_only, error if missing required
+- Serialisation: ignore read_only
+
+Response
+- Validation: never/always errors if present/missing
+- Serialisation: Returned characteristics
+
 ## Extensions
 - How to add/remove extensions as inheritance doesn't work?
 

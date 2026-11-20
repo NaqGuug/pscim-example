@@ -1,5 +1,6 @@
 from .characteristics import (
     CaseExact,
+    ExchangeDirection,
     Mutability,
     Required,
     Returned,
@@ -13,6 +14,7 @@ from .resources import (
 
 __all__ = [
     "CaseExact",
+    "ExchangeDirection",
     "Meta",
     "Mutability",
     "Required",

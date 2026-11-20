@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import Enum, StrEnum, auto
 
 
 class Required(Enum):
@@ -32,3 +32,9 @@ class Uniqueness(StrEnum):
     NONE = "none"
     SERVER = "server"
     GLOBAL = "global"
+
+
+class ExchangeDirection(Enum):
+    NONE = auto()
+    REQUEST = auto()
+    RESPONSE = auto()
