@@ -4,14 +4,13 @@
 - Resources build schemas list during model validation or init
 - Editing schemas is not necessary
 
-## Dump by alias + exclude none etc.
-- Override validation and dump methods
+## Characteristics
+- Assign default characteristics dynamically (metaclass?)
+    - Plus FailFast by default?
 
 ## Context (GET, POST differences on characteristics)
-- Validate by characteristics
-- Creating resource
-- Retrieving resource
-- Updating?
+- Model validator or field validator by type?
+    - Test performance
 
 Request
 - Validation: ignore read_only, error if missing required
@@ -20,6 +19,10 @@ Request
 Response
 - Validation: never/always errors if present/missing
 - Serialisation: Returned characteristics
+    - "Always" always retured
+    - "Never" never retured
+    - "Default" returned except excluded
+    - "Request" not returned except included
 
 ## Extensions
 - How to add/remove extensions as inheritance doesn't work?

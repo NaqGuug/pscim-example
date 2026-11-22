@@ -25,11 +25,14 @@ class SCIMBaseModel(BaseModel):
 
     model_config = ConfigDict(
         extra="forbid",
+        validate_by_alias=True,
+        serialize_by_alias=True,
         alias_generator=AliasGenerator(
             validation_alias=lambda s: s.replace("_", "").lower(),
             serialization_alias=snake_to_camel,
         ),
         use_attribute_docstrings=True,
+        allow_inf_nan=False,
     )
 
     @model_validator(mode="before")
@@ -49,15 +52,6 @@ class SCIMBaseModel(BaseModel):
 
     def __delitem__(self, key: str) -> None:
         self.__delattr__(key)
-
-    # @classmethod
-    # def _model_validation_settings(
-    #     cls,
-    #     scim_direction: ExchangeDirection | None = ExchangeDirection.NONE
-    # ) -> dict[str, Any]:
-    #     if scim_direction is not None:
-    #
-    #     return {}
 
     def model_dump(
         self,
@@ -82,7 +76,6 @@ class SCIMBaseModel(BaseModel):
             context = context or {}
             context["scim_direction"] = scim_direction
             mode = "json"
-            by_alias = True
             exclude_none = True
         return super().model_dump(
             mode=mode,
@@ -124,7 +117,6 @@ class SCIMBaseModel(BaseModel):
         if scim_direction is not None:
             context = context or {}
             context["scim_direction"] = scim_direction
-            by_alias = True
             exclude_none = True
         return super().model_dump_json(
             indent=indent,

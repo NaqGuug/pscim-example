@@ -22,5 +22,6 @@ def test_full_user_dump_json(benchmark: BenchmarkFixture) -> None:
     """Test full user from RFC 7643 section 8.2 gets dumped."""
     # NOTE: This test depends on correct user is validation
     full_user_object: User = User.model_validate_json(full_user)
-    # TODO: Should we assert something?
-    benchmark(full_user_object.model_dump_json)
+    dump = benchmark(full_user_object.model_dump_json)
+    assert "userName" in dump
+    assert "null" not in dump
