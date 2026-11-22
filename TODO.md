@@ -4,10 +4,6 @@
 - Resources build schemas list during model validation or init
 - Editing schemas is not necessary
 
-## Characteristics
-- Assign default characteristics dynamically (metaclass?)
-    - Plus FailFast by default?
-
 ## Context (GET, POST differences on characteristics)
 - Model validator or field validator by type?
     - Test performance

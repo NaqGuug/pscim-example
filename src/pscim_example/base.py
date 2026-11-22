@@ -5,12 +5,19 @@ from pydantic import (
     AliasGenerator,
     BaseModel,
     ConfigDict,
+    ValidationInfo,
+    field_validator,
     model_validator,
 )
 from pydantic.config import ExtraValues
 from pydantic.main import IncEx
 
-from .characteristics import ExchangeDirection
+from .characteristics import (
+    ExchangeDirection,
+    Mutability,
+    Required,
+    Returned,
+)
 
 
 def snake_to_camel(string: str) -> str:
@@ -52,6 +59,47 @@ class SCIMBaseModel(BaseModel):
 
     def __delitem__(self, key: str) -> None:
         self.__delattr__(key)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def validate_characteristics(cls, value: Any, info: ValidationInfo) -> Any:
+        if not isinstance(info.context, dict):
+            return value
+
+        scim_direction = info.context.get("scim_direction", None)
+        if scim_direction in (None, ExchangeDirection.NONE):
+            return value
+
+        assert info.field_name is not None
+        field_info = cls.model_fields[info.field_name]
+        metadata = field_info.metadata
+        alias = field_info.serialization_alias
+
+        if scim_direction == ExchangeDirection.REQUEST:
+            if Mutability.READ_ONLY in metadata:
+                return None
+            elif (
+                Required.TRUE in metadata
+                and value is None
+            ):
+                raise ValueError(f"Field {alias} is required.")
+        elif scim_direction == ExchangeDirection.RESPONSE:
+            if (
+                Returned.NEVER in metadata
+                and value is not None
+            ):
+                raise ValueError(
+                    f"Field {alias} with returned characteristics 'never' has value."
+                )
+            elif (
+                Returned.ALWAYS in metadata
+                and value is None
+            ):
+                raise ValueError(
+                    f"Field {alias} with returned characteristics 'awlays' doesn't have a value."
+                )
+
+        return value
 
     def model_dump(
         self,
