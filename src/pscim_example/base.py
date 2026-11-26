@@ -5,8 +5,11 @@ from pydantic import (
     AliasGenerator,
     BaseModel,
     ConfigDict,
+    SerializationInfo,
+    SerializerFunctionWrapHandler,
     ValidationInfo,
     field_validator,
+    model_serializer,
     model_validator,
 )
 from pydantic.config import ExtraValues
@@ -33,6 +36,7 @@ class SCIMBaseModel(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
         validate_by_alias=True,
+        validate_by_name=True,
         serialize_by_alias=True,
         alias_generator=AliasGenerator(
             validation_alias=lambda s: s.replace("_", "").lower(),
@@ -96,10 +100,35 @@ class SCIMBaseModel(BaseModel):
                 and value is None
             ):
                 raise ValueError(
-                    f"Field {alias} with returned characteristics 'awlays' doesn't have a value."
+                    f"Field {alias} with returned characteristics 'always' doesn't have a value."
                 )
 
         return value
+
+    @model_serializer(mode="wrap")
+    def serialise_characteristics(
+        self,
+        handler: SerializerFunctionWrapHandler,
+        info: SerializationInfo
+    ) -> dict[str, Any]:
+        serialised: dict[str, Any] = handler(self)
+
+        if not isinstance(info.context, dict):
+            return serialised
+
+        scim_direction = info.context.get("scim_direction", None)
+        if scim_direction in (None, ExchangeDirection.NONE):
+            return serialised
+
+        for field_name, field_info in type(self).model_fields.items():
+            if scim_direction == ExchangeDirection.REQUEST:
+                if Mutability.READ_ONLY in field_info.metadata:
+                    serialised.pop(field_info.serialization_alias, None)
+            if scim_direction == ExchangeDirection.RESPONSE:
+                # TODO: Always and Never manually, include and exclud by Pydantic
+                pass
+
+        return serialised
 
     def model_dump(
         self,
@@ -200,6 +229,7 @@ class SCIMBaseModel(BaseModel):
         if scim_direction is not None:
             context = context or {}
             context["scim_direction"] = scim_direction
+            by_name = False
         return super().model_validate(
             obj=obj,
             strict=strict,
@@ -225,6 +255,7 @@ class SCIMBaseModel(BaseModel):
         if scim_direction is not None:
             context = context or {}
             context["scim_direction"] = scim_direction
+            by_name = False
         return super().model_validate_json(
             json_data=json_data,
             strict=strict,
