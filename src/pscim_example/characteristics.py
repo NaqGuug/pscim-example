@@ -9,6 +9,7 @@ class Required(Enum):
 # TODO: Canonical values here or Pydantic examples block?
 
 
+# TODO: Default values per type (binary and reference)
 class CaseExact(Enum):
     TRUE = True
     FALSE = False

@@ -14,11 +14,20 @@ Request
 
 Response
 - Validation: never/always errors if present/missing
+    - Not sure if we want this
 - Serialisation: Returned characteristics
     - "Always" always retured
     - "Never" never retured
     - "Default" returned except excluded
     - "Request" not returned except included
+
+Cache
+- NICE: serialisation alias lower = validation alias
+    - We only have to store serialisation alias
+    - Maybe better just have separate
+- read_only set (validation, serialisation)
+- Required (validation)
+- Returned always/never/request (serialisation)
 
 ## Extensions
 - How to add/remove extensions as inheritance doesn't work?

@@ -19,7 +19,6 @@ from .characteristics import (
     ExchangeDirection,
     Mutability,
     Required,
-    Returned,
 )
 
 
@@ -87,21 +86,21 @@ class SCIMBaseModel(BaseModel):
                 and value is None
             ):
                 raise ValueError(f"Field {alias} is required.")
-        elif scim_direction == ExchangeDirection.RESPONSE:
-            if (
-                Returned.NEVER in metadata
-                and value is not None
-            ):
-                raise ValueError(
-                    f"Field {alias} with returned characteristics 'never' has value."
-                )
-            elif (
-                Returned.ALWAYS in metadata
-                and value is None
-            ):
-                raise ValueError(
-                    f"Field {alias} with returned characteristics 'always' doesn't have a value."
-                )
+        # elif scim_direction == ExchangeDirection.RESPONSE:
+        #     if (
+        #         Returned.NEVER in metadata
+        #         and value is not None
+        #     ):
+        #         raise ValueError(
+        #             f"Field {alias} with returned characteristics 'never' has value."
+        #         )
+        #     elif (
+        #         Returned.ALWAYS in metadata
+        #         and value is None
+        #     ):
+        #         raise ValueError(
+        #             f"Field {alias} with returned characteristics 'always' doesn't have a value."
+        #         )
 
         return value
 

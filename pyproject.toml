@@ -20,3 +20,9 @@ dev = [
     "pytest>=9.2.0",
     "pytest-benchmark[histogram]>=5.3.1",
 ]
+
+[tool.pytest]
+addopts = [
+  "--benchmark-sort=mean",
+  "--benchmark-columns=mean,stddev,median,iqr"
+]
