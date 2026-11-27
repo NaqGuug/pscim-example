@@ -14,3 +14,5 @@
     - https://stackoverflow.com/questions/20771794/mailrfc822address-regex
 - RFC 7643 does not define primary field for User addresses.
     - See errata [6005](https://errata.rfc-editor.org/eid6005/)
+- Use dynamic programming for validation/serialisation
+    - Benchmark for-loop vs cache

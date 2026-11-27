@@ -8,7 +8,6 @@ from pydantic import (
     SerializationInfo,
     SerializerFunctionWrapHandler,
     ValidationInfo,
-    field_validator,
     model_serializer,
     model_validator,
 )
@@ -47,62 +46,36 @@ class SCIMBaseModel(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def normalise_incoming_fields(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            return {key.lower(): value for key, value in data.items()}
-        return data
+    def validate_characteristics(cls, data: Any, info: ValidationInfo) -> Any:
+        if not isinstance(data, dict):
+            return data
+        # Normalise incoming fields for case insensitivity
+        normalised_data = {key.lower(): value for key, value in data.items()}
 
-    # TODO: Implement the following functions
-    # The key must be the validation alias (case-insensitive)
-    def __getitem__(self, key: str) -> Any:
-        return key.lower()
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.__getitem__(key)
-
-    def __delitem__(self, key: str) -> None:
-        self.__delattr__(key)
-
-    @field_validator("*", mode="before")
-    @classmethod
-    def validate_characteristics(cls, value: Any, info: ValidationInfo) -> Any:
         if not isinstance(info.context, dict):
-            return value
+            return normalised_data
 
         scim_direction = info.context.get("scim_direction", None)
         if scim_direction in (None, ExchangeDirection.NONE):
-            return value
+            return normalised_data
 
-        assert info.field_name is not None
-        field_info = cls.model_fields[info.field_name]
-        metadata = field_info.metadata
-        alias = field_info.serialization_alias
+        for field_info in cls.model_fields.values():
+            metadata = field_info.metadata
+            validation_alias = field_info.validation_alias
 
-        if scim_direction == ExchangeDirection.REQUEST:
-            if Mutability.READ_ONLY in metadata:
-                return None
-            elif (
-                Required.TRUE in metadata
-                and value is None
-            ):
-                raise ValueError(f"Field {alias} is required.")
-        # elif scim_direction == ExchangeDirection.RESPONSE:
-        #     if (
-        #         Returned.NEVER in metadata
-        #         and value is not None
-        #     ):
-        #         raise ValueError(
-        #             f"Field {alias} with returned characteristics 'never' has value."
-        #         )
-        #     elif (
-        #         Returned.ALWAYS in metadata
-        #         and value is None
-        #     ):
-        #         raise ValueError(
-        #             f"Field {alias} with returned characteristics 'always' doesn't have a value."
-        #         )
+            if scim_direction == ExchangeDirection.REQUEST:
+                if (
+                    Mutability.READ_ONLY in metadata
+                    and validation_alias in normalised_data
+                ):
+                    del normalised_data[validation_alias]
+                elif (
+                    Required.TRUE in metadata
+                    and normalised_data.get(validation_alias, None) is None
+                ):
+                    raise ValueError(f"Field {field_info.serialization_alias} is required.")
 
-        return value
+        return normalised_data
 
     @model_serializer(mode="wrap")
     def serialise_characteristics(
@@ -119,7 +92,7 @@ class SCIMBaseModel(BaseModel):
         if scim_direction in (None, ExchangeDirection.NONE):
             return serialised
 
-        for field_name, field_info in type(self).model_fields.items():
+        for field_info in type(self).model_fields.values():
             if scim_direction == ExchangeDirection.REQUEST:
                 if Mutability.READ_ONLY in field_info.metadata:
                     serialised.pop(field_info.serialization_alias, None)
