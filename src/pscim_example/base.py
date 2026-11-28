@@ -1,3 +1,4 @@
+import warnings
 from collections.abc import Callable
 from typing import Any, Literal, Self
 
@@ -18,6 +19,7 @@ from .characteristics import (
     ExchangeDirection,
     Mutability,
     Required,
+    Returned,
 )
 
 
@@ -47,9 +49,9 @@ class SCIMBaseModel(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def validate_characteristics(cls, data: Any, info: ValidationInfo) -> Any:
+        # Normalise incoming fields for case insensitivity
         if not isinstance(data, dict):
             return data
-        # Normalise incoming fields for case insensitivity
         normalised_data = {key.lower(): value for key, value in data.items()}
 
         if not isinstance(info.context, dict):
@@ -62,6 +64,7 @@ class SCIMBaseModel(BaseModel):
         for field_info in cls.model_fields.values():
             metadata = field_info.metadata
             validation_alias = field_info.validation_alias
+            serialisation_alias = field_info.serialization_alias
 
             if scim_direction == ExchangeDirection.REQUEST:
                 if (
@@ -73,7 +76,26 @@ class SCIMBaseModel(BaseModel):
                     Required.TRUE in metadata
                     and normalised_data.get(validation_alias, None) is None
                 ):
-                    raise ValueError(f"Field {field_info.serialization_alias} is required.")
+                    raise ValueError(f"Field '{serialisation_alias}' is required.")
+            elif scim_direction == ExchangeDirection.RESPONSE:
+                if (
+                    Returned.NEVER in metadata
+                    and normalised_data.get(validation_alias, None) is not None
+                ):
+                    warnings.warn(
+                        f"Field '{serialisation_alias}' with returned "
+                        "characteristic 'never' has value.",
+                        RuntimeWarning
+                    )
+                elif (
+                    Returned.ALWAYS in metadata
+                    and normalised_data.get(validation_alias, None) is None
+                ):
+                    warnings.warn(
+                        f"Field '{serialisation_alias}' with returned "
+                        "characteristic 'always' doesn't have a value.",
+                        RuntimeWarning
+                    )
 
         return normalised_data
 

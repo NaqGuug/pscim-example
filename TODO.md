@@ -5,16 +5,12 @@
 - Editing schemas is not necessary
 
 ## Context (GET, POST differences on characteristics)
-- Model validator or field validator by type?
-    - Test performance
-
 Request
 - Validation: ignore read_only, error if missing required
 - Serialisation: ignore read_only
 
 Response
-- Validation: never/always errors if present/missing
-    - Not sure if we want this
+- Validation: never/always warnings if present/missing
 - Serialisation: Returned characteristics
     - "Always" always retured
     - "Never" never retured
@@ -25,9 +21,11 @@ Cache
 - NICE: serialisation alias lower = validation alias
     - We only have to store serialisation alias
     - Maybe better just have separate
+    - __pydantic_init_subclass__
 - read_only set (validation, serialisation)
 - Required (validation)
 - Returned always/never/request (serialisation)
+- Returned always/never (validation)
 
 ## Extensions
 - How to add/remove extensions as inheritance doesn't work?
